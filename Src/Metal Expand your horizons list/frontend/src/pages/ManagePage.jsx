@@ -44,14 +44,14 @@ function CategoryForm({ initial, onSave, onClose }) {
 
   return (
     <>
-      <div className="form-group"><label>Nume</label><input value={name} onChange={e => setName(e.target.value)} /></div>
-      <div className="form-group"><label>Descriere</label><input value={desc} onChange={e => setDesc(e.target.value)} /></div>
-      <div className="form-group"><label>Ordine</label><input type="number" value={order} onChange={e => setOrder(e.target.value)} /></div>
+      <div className="form-group"><label>Name</label><input value={name} onChange={e => setName(e.target.value)} /></div>
+      <div className="form-group"><label>Description</label><input value={desc} onChange={e => setDesc(e.target.value)} /></div>
+      <div className="form-group"><label>Order</label><input type="number" value={order} onChange={e => setOrder(e.target.value)} /></div>
       <div className="row">
         <button className="btn-primary" onClick={save} disabled={loading || !name.trim()}>
-          {loading ? <span className="spinner" /> : null} Salveaza
+          {loading ? <span className="spinner" /> : null} Save
         </button>
-        <button className="btn-secondary" onClick={onClose}>Anuleaza</button>
+        <button className="btn-secondary" onClick={onClose}>Cancel</button>
       </div>
     </>
   )
@@ -76,19 +76,19 @@ function ArtistForm({ initial, categories, onSave, onClose }) {
   return (
     <>
       <div className="form-group">
-        <label>Categorie</label>
+        <label>Category</label>
         <select value={catId} onChange={e => setCatId(e.target.value)}>
           {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </div>
-      <div className="form-group"><label>Nume artist</label><input value={name} onChange={e => setName(e.target.value)} /></div>
-      <div className="form-group"><label>Descriere</label><input value={desc} onChange={e => setDesc(e.target.value)} /></div>
-      <div className="form-group"><label>Ordine</label><input type="number" value={order} onChange={e => setOrder(e.target.value)} /></div>
+      <div className="form-group"><label>Artist name</label><input value={name} onChange={e => setName(e.target.value)} /></div>
+      <div className="form-group"><label>Description</label><input value={desc} onChange={e => setDesc(e.target.value)} /></div>
+      <div className="form-group"><label>Order</label><input type="number" value={order} onChange={e => setOrder(e.target.value)} /></div>
       <div className="row">
         <button className="btn-primary" onClick={save} disabled={loading || !name.trim()}>
-          {loading ? <span className="spinner" /> : null} Salveaza
+          {loading ? <span className="spinner" /> : null} Save
         </button>
-        <button className="btn-secondary" onClick={onClose}>Anuleaza</button>
+        <button className="btn-secondary" onClick={onClose}>Cancel</button>
       </div>
     </>
   )
@@ -129,9 +129,9 @@ function AlbumForm({ initial, artists, onSave, onClose }) {
           {artists.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
         </select>
       </div>
-      <div className="form-group"><label>Titlu album</label><input value={title} onChange={e => setTitle(e.target.value)} /></div>
+      <div className="form-group"><label>Album title</label><input value={title} onChange={e => setTitle(e.target.value)} /></div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-        <div className="form-group"><label>An</label><input type="number" value={year} onChange={e => setYear(e.target.value)} /></div>
+        <div className="form-group"><label>Year</label><input type="number" value={year} onChange={e => setYear(e.target.value)} /></div>
         <div className="form-group">
           <label>Rating (0-5)</label>
           <input type="number" step="0.1" min="0" max="5" value={rating} onChange={e => setRating(e.target.value)} />
@@ -140,17 +140,17 @@ function AlbumForm({ initial, artists, onSave, onClose }) {
       <div className="form-group">
         <label>Icon</label>
         <select value={icon} onChange={e => setIcon(e.target.value)}>
-          <option value="">— Fara icon —</option>
+          <option value="">— No icon —</option>
           {ICONS.map(i => <option key={i} value={i}>{i}</option>)}
         </select>
       </div>
-      <div className="form-group"><label>Descriere scurta</label><input value={desc} onChange={e => setDesc(e.target.value)} /></div>
-      <div className="form-group"><label>Ordine</label><input type="number" value={order} onChange={e => setOrder(e.target.value)} /></div>
+      <div className="form-group"><label>Short description</label><input value={desc} onChange={e => setDesc(e.target.value)} /></div>
+      <div className="form-group"><label>Order</label><input type="number" value={order} onChange={e => setOrder(e.target.value)} /></div>
       <div className="row">
         <button className="btn-primary" onClick={save} disabled={loading || !title.trim()}>
-          {loading ? <span className="spinner" /> : null} Salveaza
+          {loading ? <span className="spinner" /> : null} Save
         </button>
-        <button className="btn-secondary" onClick={onClose}>Anuleaza</button>
+        <button className="btn-secondary" onClick={onClose}>Cancel</button>
       </div>
     </>
   )
@@ -182,19 +182,19 @@ export default function ManagePage() {
 
   // ── Delete handlers ──
   const delCategory = async (id) => {
-    if (!confirm('Stergi categoria si toti artistii/albumele din ea?')) return
+    if (!confirm('Delete this category and all its artists/albums?')) return
     await deleteCategory(id)
     reload()
   }
 
   const delArtist = async (id) => {
-    if (!confirm('Stergi artistul si toate albumele lui?')) return
+    if (!confirm('Delete this artist and all their albums?')) return
     await deleteArtist(id)
     reload()
   }
 
   const delAlbum = async (id) => {
-    if (!confirm('Stergi albumul?')) return
+    if (!confirm('Delete this album?')) return
     await deleteAlbum(id)
     reload()
   }
@@ -235,14 +235,14 @@ export default function ManagePage() {
   const getCatName = (id) => categories.find(c => c.id === id)?.name || '—'
   const getArtistName = (id) => artists.find(a => a.id === id)?.name || '—'
 
-  if (loading) return <div><span className="spinner" /> Se incarca...</div>
+  if (loading) return <div><span className="spinner" /> Loading...</div>
 
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
         <div className="page-title" style={{ margin: 0 }}>Management</div>
         <div className="row" style={{ gap: 0 }}>
-          {[['albums', 'Albume'], ['artists', 'Artisti'], ['categories', 'Categorii']].map(([t, label]) => (
+          {[['albums', 'Albums'], ['artists', 'Artists'], ['categories', 'Categories']].map(([t, label]) => (
             <button
               key={t}
               onClick={() => setTab(t)}
@@ -258,54 +258,54 @@ export default function ManagePage() {
       </div>
 
       {/* Filters */}
-      {tab !== 'categories' && (
-        <div className="row" style={{ marginBottom: 16, flexWrap: 'wrap' }}>
-          <select
-            style={{ width: 200 }}
-            value={filterCat}
-            onChange={e => setFilterCat(e.target.value)}
-          >
-            <option value="">Toate categoriile</option>
-            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-          {tab === 'albums' && (
-            <input
-              style={{ width: 200 }}
-              placeholder="Filtreaza dupa artist..."
-              value={filterArtist}
-              onChange={e => setFilterArtist(e.target.value)}
-            />
-          )}
-        </div>
-      )}
+       {tab !== 'categories' && (
+         <div className="row" style={{ marginBottom: 16, flexWrap: 'wrap' }}>
+           <select
+             style={{ width: 200 }}
+             value={filterCat}
+             onChange={e => setFilterCat(e.target.value)}
+           >
+             <option value="">All categories</option>
+             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+           </select>
+           {tab === 'albums' && (
+             <input
+               style={{ width: 200 }}
+               placeholder="Filter by artist..."
+               value={filterArtist}
+               onChange={e => setFilterArtist(e.target.value)}
+             />
+           )}
+         </div>
+       )}
 
-      {/* ── CATEGORIES ── */}
-      {tab === 'categories' && (
-        <>
-          <button className="btn-primary" style={{ marginBottom: 12 }} onClick={() => setModal({ type: 'category' })}>
-            + Adauga categorie
-          </button>
+       {/* ── CATEGORIES ── */}
+       {tab === 'categories' && (
+         <>
+           <button className="btn-primary" style={{ marginBottom: 12 }} onClick={() => setModal({ type: 'category' })}>
+             + Add category
+           </button>
           {categories.map(cat => (
             <div key={cat.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <strong style={{ textTransform: 'uppercase', fontSize: 13, color: 'var(--accent2)' }}>{cat.name}</strong>
                 {cat.description && <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>{cat.description}</div>}
               </div>
-              <div className="row">
-                <button className="btn-secondary btn-sm" onClick={() => setModal({ type: 'category', item: cat })}>Edit</button>
-                <button className="btn-danger btn-sm" onClick={() => delCategory(cat.id)}>Sterge</button>
-              </div>
+               <div className="row">
+                 <button className="btn-secondary btn-sm" onClick={() => setModal({ type: 'category', item: cat })}>Edit</button>
+                 <button className="btn-danger btn-sm" onClick={() => delCategory(cat.id)}>Delete</button>
+               </div>
             </div>
           ))}
         </>
       )}
 
-      {/* ── ARTISTS ── */}
-      {tab === 'artists' && (
-        <>
-          <button className="btn-primary" style={{ marginBottom: 12 }} onClick={() => setModal({ type: 'artist' })}>
-            + Adauga artist
-          </button>
+       {/* ── ARTISTS ── */}
+       {tab === 'artists' && (
+         <>
+           <button className="btn-primary" style={{ marginBottom: 12 }} onClick={() => setModal({ type: 'artist' })}>
+             + Add artist
+           </button>
           {filteredArtists.map(artist => (
             <div key={artist.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
@@ -317,21 +317,21 @@ export default function ManagePage() {
                   <div style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>{artist.description}</div>
                 )}
               </div>
-              <div className="row">
-                <button className="btn-secondary btn-sm" onClick={() => setModal({ type: 'artist', item: artist })}>Edit</button>
-                <button className="btn-danger btn-sm" onClick={() => delArtist(artist.id)}>Sterge</button>
-              </div>
-            </div>
-          ))}
-        </>
-      )}
+               <div className="row">
+                 <button className="btn-secondary btn-sm" onClick={() => setModal({ type: 'artist', item: artist })}>Edit</button>
+                 <button className="btn-danger btn-sm" onClick={() => delArtist(artist.id)}>Delete</button>
+               </div>
+             </div>
+           ))}
+         </>
+       )}
 
-      {/* ── ALBUMS ── */}
-      {tab === 'albums' && (
-        <>
-          <button className="btn-primary" style={{ marginBottom: 12 }} onClick={() => setModal({ type: 'album' })}>
-            + Adauga album
-          </button>
+       {/* ── ALBUMS ── */}
+       {tab === 'albums' && (
+         <>
+           <button className="btn-primary" style={{ marginBottom: 12 }} onClick={() => setModal({ type: 'album' })}>
+             + Add album
+           </button>
           {filteredAlbums.map(album => (
             <div key={album.id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
               <div style={{ flex: 1 }}>
@@ -346,31 +346,31 @@ export default function ManagePage() {
                   <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{album.description}</div>
                 )}
               </div>
-              <div className="row">
-                <button className="btn-secondary btn-sm" onClick={() => setModal({ type: 'album', item: album })}>Edit</button>
-                <button className="btn-danger btn-sm" onClick={() => delAlbum(album.id)}>Sterge</button>
-              </div>
+               <div className="row">
+                 <button className="btn-secondary btn-sm" onClick={() => setModal({ type: 'album', item: album })}>Edit</button>
+                 <button className="btn-danger btn-sm" onClick={() => delAlbum(album.id)}>Delete</button>
+               </div>
             </div>
           ))}
         </>
       )}
 
-      {/* ── Modals ── */}
-      {modal?.type === 'category' && (
-        <Modal title={modal.item ? 'Editeaza categorie' : 'Adauga categorie'} onClose={closeModal}>
-          <CategoryForm initial={modal.item} onSave={saveCategory} onClose={closeModal} />
-        </Modal>
-      )}
-      {modal?.type === 'artist' && (
-        <Modal title={modal.item ? 'Editeaza artist' : 'Adauga artist'} onClose={closeModal}>
-          <ArtistForm initial={modal.item} categories={categories} onSave={saveArtist} onClose={closeModal} />
-        </Modal>
-      )}
-      {modal?.type === 'album' && (
-        <Modal title={modal.item ? 'Editeaza album' : 'Adauga album'} onClose={closeModal}>
-          <AlbumForm initial={modal.item} artists={artists} onSave={saveAlbum} onClose={closeModal} />
-        </Modal>
-      )}
+       {/* ── Modals ── */}
+       {modal?.type === 'category' && (
+         <Modal title={modal.item ? 'Edit category' : 'Add category'} onClose={closeModal}>
+           <CategoryForm initial={modal.item} onSave={saveCategory} onClose={closeModal} />
+         </Modal>
+       )}
+       {modal?.type === 'artist' && (
+         <Modal title={modal.item ? 'Edit artist' : 'Add artist'} onClose={closeModal}>
+           <ArtistForm initial={modal.item} categories={categories} onSave={saveArtist} onClose={closeModal} />
+         </Modal>
+       )}
+       {modal?.type === 'album' && (
+         <Modal title={modal.item ? 'Edit album' : 'Add album'} onClose={closeModal}>
+           <AlbumForm initial={modal.item} artists={artists} onSave={saveAlbum} onClose={closeModal} />
+         </Modal>
+       )}
     </div>
   )
 }

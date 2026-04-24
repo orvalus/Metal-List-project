@@ -37,7 +37,7 @@ class Album(SQLModel, table=True):
     artist: Optional[Artist] = Relationship(back_populates="albums")
 
 
-# --- Response/Request schemas (fara table=True) ---
+# --- Response/Request schemas (without table=True) ---
 
 class CategoryRead(SQLModel):
     id: int
@@ -111,7 +111,7 @@ class AlbumUpdate(SQLModel):
     artist_id: Optional[int] = None
 
 
-# --- Full nested read (pentru afisare completa) ---
+# --- Full nested read (for complete display) ---
 
 class AlbumNested(SQLModel):
     id: int

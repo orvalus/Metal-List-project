@@ -1,5 +1,5 @@
 """
-Audit: compara albumele unui artist din DB cu discografia de pe Sputnikmusic.
+Audit: compare an artist's albums from DB with their discography on Sputnikmusic.
 """
 
 import httpx
@@ -19,11 +19,11 @@ class SputnikAlbum:
 class AuditResult:
     artist_name: str
     sputnik_url: Optional[str]
-    missing_albums: List[SputnikAlbum]       # albume pe Sputnikmusic, nu in DB
-    extra_albums: List[str]                   # albume in DB, nu pe Sputnikmusic
-    order_issues: List[str]                   # probleme de ordine cronologica
-    rating_diffs: List[dict]                  # diferente de rating
-    sputnik_albums: List[SputnikAlbum]        # discografia completa de pe Sputnikmusic
+    missing_albums: List[SputnikAlbum]       # albums on Sputnikmusic but not in DB
+    extra_albums: List[str]                   # albums in DB but not on Sputnikmusic
+    order_issues: List[str]                   # chronological order issues
+    rating_diffs: List[dict]                  # rating differences
+    sputnik_albums: List[SputnikAlbum]        # complete discography from Sputnikmusic
 
 
 HEADERS = {
@@ -33,9 +33,9 @@ HEADERS = {
 
 
 async def _search_artist_sputnik(artist_name: str) -> Optional[str]:
-    """Cauta artistul pe Sputnikmusic si returneaza URL-ul profilului."""
+    """Search for the artist on Sputnikmusic and return the profile URL."""
     search_url = f"https://www.sputnikmusic.com/search/bands/{httpx.URL(artist_name)}"
-    # Sputnikmusic search foloseste GET cu parametru
+    # Sputnikmusic search uses GET with parameter
     search_url = f"https://www.sputnikmusic.com/search_results.php?genreid=0&search_in=Bands&search_text={artist_name.replace(' ', '+')}&x=0&y=0"
 
     async with httpx.AsyncClient(headers=HEADERS, follow_redirects=True, timeout=20) as client:
@@ -45,7 +45,7 @@ async def _search_artist_sputnik(artist_name: str) -> Optional[str]:
 
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        # Cauta link-uri catre pagini de artisti (/bands/...)
+        # Search for links to artist pages (/bands/...)
         for a in soup.find_all("a", href=True):
             href = a["href"]
             if "/bands/" in href and artist_name.lower().replace(" ", "") in href.lower().replace("-", "").replace("_", ""):
@@ -53,7 +53,7 @@ async def _search_artist_sputnik(artist_name: str) -> Optional[str]:
                     href = "https://www.sputnikmusic.com" + href
                 return href
 
-        # Fallback: primul rezultat din search
+        # Fallback: first search result
         for a in soup.find_all("a", href=True):
             href = a["href"]
             if "/bands/" in href:
@@ -65,7 +65,7 @@ async def _search_artist_sputnik(artist_name: str) -> Optional[str]:
 
 
 async def _get_discography_sputnik(artist_url: str) -> List[SputnikAlbum]:
-    """Preia discografia unui artist de pe Sputnikmusic."""
+    """Fetch an artist's discography from Sputnikmusic."""
     async with httpx.AsyncClient(headers=HEADERS, follow_redirects=True, timeout=20) as client:
         resp = await client.get(artist_url)
         if resp.status_code != 200:
@@ -74,8 +74,8 @@ async def _get_discography_sputnik(artist_url: str) -> List[SputnikAlbum]:
         soup = BeautifulSoup(resp.text, "html.parser")
         albums = []
 
-        # Sputnikmusic: albumele sunt in tabele cu clasa "album" sau in div-uri
-        # Structura variaza, incercam mai multe selectori
+        # Sputnikmusic: albums are in tables with "album" class or in divs
+        # Structure varies, try multiple selectors
         for row in soup.select("table.discography tr, .albumblock, td.albuminfo"):
             title_el = row.select_one(".albumtitle, a[href*='/album/'], strong")
             year_el = row.select_one(".albumyear, .year")
@@ -108,23 +108,23 @@ async def _get_discography_sputnik(artist_url: str) -> List[SputnikAlbum]:
 
 
 def _normalize(title: str) -> str:
-    """Normalizeaza titlul pentru comparatie."""
+    """Normalize the title for comparison."""
     import re
     return re.sub(r"[^a-z0-9]", "", title.lower())
 
 
 async def audit_artist_sputnik(artist_name: str, db_albums: list) -> dict:
     """
-    Compara albumele din DB cu discografia de pe Sputnikmusic.
-    Returneaza un dict cu rezultatele auditului.
+    Compare DB albums with discography on Sputnikmusic.
+    Return a dict with audit results.
     """
-    # 1. Cauta artistul
+    # 1. Search for the artist
     artist_url = await _search_artist_sputnik(artist_name)
     if not artist_url:
         return {
             "artist": artist_name,
             "sputnik_url": None,
-            "error": "Artistul nu a fost gasit pe Sputnikmusic.",
+            "error": "Artist not found on Sputnikmusic.",
             "missing_albums": [],
             "extra_albums": [],
             "order_issues": [],
@@ -132,37 +132,37 @@ async def audit_artist_sputnik(artist_name: str, db_albums: list) -> dict:
             "sputnik_albums": [],
         }
 
-    # 2. Preia discografia
+    # 2. Fetch discography
     sputnik_albums = await _get_discography_sputnik(artist_url)
 
-    # 3. Normalizeaza titlurile pentru comparatie
+    # 3. Normalize titles for comparison
     db_titles = {_normalize(a.title): a for a in db_albums}
     sputnik_titles = {_normalize(a.title): a for a in sputnik_albums}
 
-    # 4. Albume lipsa (pe Sputnikmusic dar nu in DB)
+    # 4. Missing albums (on Sputnikmusic but not in DB)
     missing = [
         {"title": a.title, "year": a.year, "rating": a.rating}
         for key, a in sputnik_titles.items()
         if key not in db_titles
     ]
 
-    # 5. Albume extra (in DB dar nu pe Sputnikmusic)
+    # 5. Extra albums (in DB but not on Sputnikmusic)
     extra = [
         a.title
         for key, a in db_titles.items()
         if key not in sputnik_titles
     ]
 
-    # 6. Verificare ordine cronologica (in DB)
+    # 6. Check chronological order (in DB)
     order_issues = []
     years = [(a.title, a.year) for a in db_albums if a.year is not None]
     for i in range(1, len(years)):
         if years[i][1] < years[i - 1][1]:
             order_issues.append(
-                f"'{years[i][0]}' ({years[i][1]}) apare dupa '{years[i-1][0]}' ({years[i-1][1]})"
+                f"'{years[i][0]}' ({years[i][1]}) appears after '{years[i-1][0]}' ({years[i-1][1]})"
             )
 
-    # 7. Diferente de rating
+    # 7. Rating differences
     rating_diffs = []
     for key, db_album in db_titles.items():
         if key in sputnik_titles:

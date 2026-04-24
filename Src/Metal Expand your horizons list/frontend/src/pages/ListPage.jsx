@@ -47,13 +47,13 @@ export default function ListPage() {
       })).filter(cat => cat.artists.length > 0)
     : data
 
-  if (loading) return <div><span className="spinner" /> Se incarca lista...</div>
+  if (loading) return <div><span className="spinner" /> Loading list...</div>
 
   if (!data.length) return (
     <div>
-      <div className="page-title">Lista</div>
+      <div className="page-title">List</div>
       <div className="alert alert-info">
-        Lista este goala. Mergi la <strong>Import</strong> pentru a importa datele din Google Docs.
+        The list is empty. Go to <strong>Import</strong> to import data from Google Docs.
       </div>
     </div>
   )
@@ -61,10 +61,10 @@ export default function ListPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
-        <div className="page-title" style={{ margin: 0 }}>Lista</div>
+        <div className="page-title" style={{ margin: 0 }}>List</div>
         <input
           style={{ maxWidth: 280 }}
-          placeholder="Cauta artist sau album..."
+          placeholder="Search artist or album..."
           value={filter}
           onChange={e => setFilter(e.target.value)}
         />
@@ -95,7 +95,7 @@ export default function ListPage() {
               )}
             </div>
             <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>
-              {cat.artists.length} artisti {collapsed[cat.id] ? '▶' : '▼'}
+              {cat.artists.length} artists {collapsed[cat.id] ? '▶' : '▼'}
             </span>
           </div>
 
@@ -110,7 +110,7 @@ export default function ListPage() {
                     </span>
                   )}
                 </div>
-                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{artist.albums.length} albume</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{artist.albums.length} albums</span>
               </div>
 
               <div>

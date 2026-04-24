@@ -29,23 +29,23 @@ def on_startup():
 
 
 # ─────────────────────────────────────────────
-# IMPORT
+# IMPORT ROUTES
 # ─────────────────────────────────────────────
 
-@app.post("/import/url", summary="Importa din Google Docs URL")
+@app.post("/import/url", summary="Import from Google Docs URL")
 async def import_from_url(
-    url: str = Query(..., description="URL Google Docs public"),
-    replace: bool = Query(False, description="Sterge datele existente inainte de import"),
+    url: str = Query(..., description="Public Google Docs URL"),
+    replace: bool = Query(False, description="Delete existing data before import"),
     session: Session = Depends(get_session),
 ):
     try:
         text = await fetch_google_doc_text(url)
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Nu s-a putut accesa Google Docs: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Failed to access Google Docs: {str(e)}")
 
     categories = parse_text(text)
     if not categories:
-        raise HTTPException(status_code=422, detail="Nu s-au detectat categorii in document. Verifica formatul.")
+        raise HTTPException(status_code=422, detail="No categories detected in document. Check the format.")
 
     import_parsed_data(session, categories, replace=replace)
     total_artists = sum(len(c.artists) for c in categories)
@@ -60,7 +60,7 @@ async def import_from_url(
     }
 
 
-@app.post("/import/text", summary="Importa din text direct")
+@app.post("/import/text", summary="Import from raw text")
 async def import_from_text(
     body: dict,
     session: Session = Depends(get_session),
@@ -68,11 +68,11 @@ async def import_from_text(
     text = body.get("text", "")
     replace = body.get("replace", False)
     if not text:
-        raise HTTPException(status_code=400, detail="Campul 'text' este gol.")
+        raise HTTPException(status_code=400, detail="The 'text' field is empty.")
 
     categories = parse_text(text)
     if not categories:
-        raise HTTPException(status_code=422, detail="Nu s-au detectat categorii in text. Verifica formatul.")
+        raise HTTPException(status_code=422, detail="No categories detected in text. Check the format.")
 
     import_parsed_data(session, categories, replace=replace)
     total_artists = sum(len(c.artists) for c in categories)
@@ -143,7 +143,7 @@ def create_category(data: CategoryCreate, session: Session = Depends(get_session
 def update_category(cat_id: int, data: CategoryUpdate, session: Session = Depends(get_session)):
     cat = session.get(Category, cat_id)
     if not cat:
-        raise HTTPException(status_code=404, detail="Categoria nu exista")
+        raise HTTPException(status_code=404, detail="Category does not exist")
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(cat, field, value)
     session.add(cat)
@@ -156,8 +156,8 @@ def update_category(cat_id: int, data: CategoryUpdate, session: Session = Depend
 def delete_category(cat_id: int, session: Session = Depends(get_session)):
     cat = session.get(Category, cat_id)
     if not cat:
-        raise HTTPException(status_code=404, detail="Categoria nu exista")
-    # Sterge artisti si albume in cascada
+        raise HTTPException(status_code=404, detail="Category does not exist")
+    # Delete artists and albums in cascade
     artists = session.exec(select(Artist).where(Artist.category_id == cat_id)).all()
     for artist in artists:
         albums = session.exec(select(Album).where(Album.artist_id == artist.id)).all()
@@ -186,7 +186,7 @@ def get_artists(
 @app.post("/artists", response_model=ArtistRead, status_code=201)
 def create_artist(data: ArtistCreate, session: Session = Depends(get_session)):
     if not session.get(Category, data.category_id):
-        raise HTTPException(status_code=404, detail="Categoria nu exista")
+        raise HTTPException(status_code=404, detail="Category does not exist")
     artist = Artist(**data.model_dump())
     session.add(artist)
     session.commit()
@@ -198,7 +198,7 @@ def create_artist(data: ArtistCreate, session: Session = Depends(get_session)):
 def update_artist(artist_id: int, data: ArtistUpdate, session: Session = Depends(get_session)):
     artist = session.get(Artist, artist_id)
     if not artist:
-        raise HTTPException(status_code=404, detail="Artistul nu exista")
+        raise HTTPException(status_code=404, detail="Artist does not exist")
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(artist, field, value)
     session.add(artist)
@@ -211,7 +211,7 @@ def update_artist(artist_id: int, data: ArtistUpdate, session: Session = Depends
 def delete_artist(artist_id: int, session: Session = Depends(get_session)):
     artist = session.get(Artist, artist_id)
     if not artist:
-        raise HTTPException(status_code=404, detail="Artistul nu exista")
+        raise HTTPException(status_code=404, detail="Artist does not exist")
     albums = session.exec(select(Album).where(Album.artist_id == artist_id)).all()
     for album in albums:
         session.delete(album)
@@ -237,7 +237,7 @@ def get_albums(
 @app.post("/albums", response_model=AlbumRead, status_code=201)
 def create_album(data: AlbumCreate, session: Session = Depends(get_session)):
     if not session.get(Artist, data.artist_id):
-        raise HTTPException(status_code=404, detail="Artistul nu exista")
+        raise HTTPException(status_code=404, detail="Artist does not exist")
     album = Album(**data.model_dump())
     session.add(album)
     session.commit()
@@ -249,7 +249,7 @@ def create_album(data: AlbumCreate, session: Session = Depends(get_session)):
 def update_album(album_id: int, data: AlbumUpdate, session: Session = Depends(get_session)):
     album = session.get(Album, album_id)
     if not album:
-        raise HTTPException(status_code=404, detail="Albumul nu exista")
+        raise HTTPException(status_code=404, detail="Album does not exist")
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(album, field, value)
     session.add(album)
@@ -262,7 +262,7 @@ def update_album(album_id: int, data: AlbumUpdate, session: Session = Depends(ge
 def delete_album(album_id: int, session: Session = Depends(get_session)):
     album = session.get(Album, album_id)
     if not album:
-        raise HTTPException(status_code=404, detail="Albumul nu exista")
+        raise HTTPException(status_code=404, detail="Album does not exist")
     session.delete(album)
     session.commit()
 
@@ -271,12 +271,12 @@ def delete_album(album_id: int, session: Session = Depends(get_session)):
 # AUDIT
 # ─────────────────────────────────────────────
 
-@app.get("/audit/{artist_id}", summary="Auditeaza un artist fata de Sputnikmusic")
+@app.get("/audit/{artist_id}", summary="Audit an artist against Sputnikmusic")
 async def audit_artist(artist_id: int, session: Session = Depends(get_session)):
     from audit import audit_artist_sputnik
     artist = session.get(Artist, artist_id)
     if not artist:
-        raise HTTPException(status_code=404, detail="Artistul nu exista")
+        raise HTTPException(status_code=404, detail="Artist does not exist")
     albums_in_db = session.exec(select(Album).where(Album.artist_id == artist_id).order_by(Album.sort_order)).all()
     result = await audit_artist_sputnik(artist.name, albums_in_db)
     return result

@@ -11,7 +11,7 @@ export default function App() {
       <header className="header">
         <span className="logo">🤘 Metal List</span>
         <nav className="nav">
-          <NavLink to="/">Lista</NavLink>
+          <NavLink to="/">List</NavLink>
           <NavLink to="/manage">Management</NavLink>
           <NavLink to="/import">Import</NavLink>
           <NavLink to="/audit">Audit</NavLink>

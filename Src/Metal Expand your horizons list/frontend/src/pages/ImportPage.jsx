@@ -28,7 +28,7 @@ export default function ImportPage() {
 
   return (
     <div>
-      <div className="page-title">Import date</div>
+      <div className="page-title">Import Data</div>
 
       <div className="card" style={{ maxWidth: 600 }}>
         <div className="row" style={{ marginBottom: 16, gap: 0 }}>
@@ -44,52 +44,52 @@ export default function ImportPage() {
                 borderRadius: t === 'url' ? '6px 0 0 6px' : '0 6px 6px 0',
               }}
             >
-              {t === 'url' ? 'Google Docs URL' : 'Text direct'}
+              {t === 'url' ? 'Google Docs URL' : 'Raw Text'}
             </button>
           ))}
         </div>
 
-        {tab === 'url' ? (
-          <div className="form-group">
-            <label>URL Google Docs (trebuie sa fie public / "Anyone with link")</label>
-            <input
-              value={url}
-              onChange={e => setUrl(e.target.value)}
-              placeholder="https://docs.google.com/document/d/..."
-            />
-          </div>
-        ) : (
-          <div className="form-group">
-            <label>Lipeste textul din Google Docs</label>
-            <textarea
-              rows={12}
-              value={text}
-              onChange={e => setText(e.target.value)}
-              placeholder="PROTO-METAL / HARD ROCK&#10;*Early heavy sounds...*&#10;&#10;***Black Sabbath*** - definitive proto-metal..."
-              style={{ fontFamily: 'monospace', fontSize: 12 }}
-            />
-          </div>
-        )}
+         {tab === 'url' ? (
+           <div className="form-group">
+             <label>Google Docs URL (must be public / "Anyone with link")</label>
+             <input
+               value={url}
+               onChange={e => setUrl(e.target.value)}
+               placeholder="https://docs.google.com/document/d/..."
+             />
+           </div>
+         ) : (
+           <div className="form-group">
+             <label>Paste text from Google Docs</label>
+             <textarea
+               rows={12}
+               value={text}
+               onChange={e => setText(e.target.value)}
+               placeholder="PROTO-METAL / HARD ROCK&#10;*Early heavy sounds...*&#10;&#10;***Black Sabbath*** - definitive proto-metal..."
+               style={{ fontFamily: 'monospace', fontSize: 12 }}
+             />
+           </div>
+         )}
 
-        <div className="row" style={{ marginBottom: 16 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13 }}>
-            <input
-              type="checkbox"
-              style={{ width: 'auto' }}
-              checked={replace}
-              onChange={e => setReplace(e.target.checked)}
-            />
-            Sterge datele existente inainte de import
-          </label>
-        </div>
+         <div className="row" style={{ marginBottom: 16 }}>
+           <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13 }}>
+             <input
+               type="checkbox"
+               style={{ width: 'auto' }}
+               checked={replace}
+               onChange={e => setReplace(e.target.checked)}
+             />
+             Delete existing data before import
+           </label>
+         </div>
 
-        {result && (
-          <div className="alert alert-success">
-            Import reusit: <strong>{result.categories}</strong> categorii,{' '}
-            <strong>{result.artists}</strong> artisti,{' '}
-            <strong>{result.albums}</strong> albume.
-          </div>
-        )}
+         {result && (
+           <div className="alert alert-success">
+             Import successful: <strong>{result.categories}</strong> categories,{' '}
+             <strong>{result.artists}</strong> artists,{' '}
+             <strong>{result.albums}</strong> albums.
+           </div>
+         )}
 
         {error && (
           <div className="alert alert-error">{error}</div>
@@ -99,16 +99,16 @@ export default function ImportPage() {
           className="btn-primary"
           onClick={handleImport}
           disabled={loading || (tab === 'url' ? !url.trim() : !text.trim())}
-        >
-          {loading && <span className="spinner" />}
-          {loading ? 'Se importa...' : 'Importa'}
-        </button>
-      </div>
+         >
+           {loading && <span className="spinner" />}
+           {loading ? 'Importing...' : 'Import'}
+         </button>
+       </div>
 
-      <div className="card" style={{ maxWidth: 600, marginTop: 16 }}>
-        <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8, fontWeight: 600 }}>
-          Format asteptat
-        </div>
+       <div className="card" style={{ maxWidth: 600, marginTop: 16 }}>
+         <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8, fontWeight: 600 }}>
+           Expected format
+         </div>
         <pre style={{ fontSize: 11, color: 'var(--text-muted)', lineHeight: 1.7, overflow: 'auto' }}>{`PROTO-METAL / HARD ROCK
 *Early heavy sounds before metal crystallized*
 
