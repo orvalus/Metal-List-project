@@ -1,13 +1,21 @@
 # Project Progress: Metal List
 
-**Last Updated:** April 23, 2026 (Updated: MVP Spec Finalized)  
-**Status:** Prototype with specs clarified, ready for implementation
+**Last Updated:** April 24, 2026 (Updated: Test Infrastructure Merged)  
+**Status:** MVP spec complete + full test infrastructure in place
 
 ---
 
 ## Current State
 
-### ✅ Completed
+### ✅ Completed (Latest: Test Infrastructure - Apr 24)
+0. **Test Infrastructure** — Full TDD setup with coverage
+   - Issue #12: pytest + vitest frameworks ✓
+   - Issue #16: Coverage reporting (95% backend, 80% frontend) ✓
+   - Issue #23: Infrastructure ready (conftest.py, models.py SQLAlchemy 2.0) ✓
+   - All tests passing: 36 backend, 7 frontend
+   - GitHub Actions CI/CD workflow ready
+   - COVERAGE_GOALS.md documentation complete
+
 1. **Product Requirements (prd.md)** — Full feature set defined
    - MVP features: List view, Manage page, Import page, Audit page
    - Rating system (🔥E, ⭐R, 🌘D, ⚠️A, 🌀X)
