@@ -20,6 +20,11 @@ export default defineConfig({
         '**/*.config.js',
         '**/setupTests.js',
       ],
+      // Aim for 95% coverage across all metrics
+      lines: 80,
+      functions: 80,
+      branches: 80,
+      statements: 80,
     },
   },
 })
