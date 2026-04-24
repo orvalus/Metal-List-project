@@ -35,5 +35,6 @@ export const updateAlbum = (id, data) => api.patch(`/albums/${id}`, data).then(r
 export const deleteAlbum = (id) => api.delete(`/albums/${id}`)
 
 // ── Audit (DISABLED) ───────────────────────────────────
-// Audit functionality has been disabled to prevent external connections to Sputnikmusic
+// Audit functionality has been disabled to prevent external connections to Sputnikmusic.
+// Backend endpoint exists (returns 501 Not Implemented).
 // export const auditArtist = (artistId) => api.get(`/audit/${artistId}`).then(r => r.data)

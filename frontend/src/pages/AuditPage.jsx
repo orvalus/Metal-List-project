@@ -13,7 +13,7 @@ export default function AuditPage() {
         </p>
       </div>
 
-      <div className="card" style={{ maxWidth: 500, marginBottom: 20, opacity: 0.5, pointerEvents: 'none' }}>
+      <div className="card" style={{ maxWidth: 500, marginBottom: 20, pointerEvents: 'none' }}>
          <div className="form-group">
             <label>Filter by category (disabled)</label>
             <select disabled>
@@ -33,8 +33,6 @@ export default function AuditPage() {
             Run Audit (disabled)
           </button>
         </div>
-
-    
     </div>
   )
 }
