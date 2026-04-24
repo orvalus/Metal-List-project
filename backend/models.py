@@ -1,41 +1,42 @@
 from __future__ import annotations
 from typing import Optional, List
+from sqlalchemy.orm import Mapped
 from sqlmodel import SQLModel, Field, Relationship
 
 
 class Category(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)          # ex: "PROTO-METAL / HARD ROCK"
-    description: Optional[str] = None      # ex: "Early heavy sounds before metal crystallized"
+    name: str = Field(index=True)
+    description: Optional[str] = None
     sort_order: int = Field(default=0)
 
-    artists: List["Artist"] = Relationship(back_populates="category")
+    artists: Mapped[List["Artist"]] = Relationship(back_populates="category")
 
 
 class Artist(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    name: str = Field(index=True)          # ex: "Black Sabbath"
-    description: Optional[str] = None      # ex: "definitive proto-metal, dark riffs, occult atmosphere"
+    name: str = Field(index=True)
+    description: Optional[str] = None
     sort_order: int = Field(default=0)
 
     category_id: Optional[int] = Field(default=None, foreign_key="category.id")
-    category: Optional[Category] = Relationship(back_populates="artists")
+    category: Mapped[Optional["Category"]] = Relationship(back_populates="artists")
 
-    albums: List["Album"] = Relationship(back_populates="artist")
+    albums: Mapped[List["Album"]] = Relationship(back_populates="artist")
 
 
 class Album(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
     year: Optional[int] = None
-    icon: Optional[str] = None             # ex: "🔥E", "⭐R", "🌘D", "⚠️A", "🌀X"
-    rating: Optional[float] = None         # ex: 4.7
-    description: Optional[str] = None      # ex: "riff-bible, invented the genre"
-    sputnik_url: Optional[str] = None      # ex: "https://www.sputnikmusic.com/album/12345/"
+    icon: Optional[str] = None
+    rating: Optional[float] = None
+    description: Optional[str] = None
+    sputnik_url: Optional[str] = None
     sort_order: int = Field(default=0)
 
     artist_id: Optional[int] = Field(default=None, foreign_key="artist.id")
-    artist: Optional[Artist] = Relationship(back_populates="albums")
+    artist: Mapped[Optional["Artist"]] = Relationship(back_populates="albums")
 
 
 # --- Response/Request schemas (without table=True) ---
@@ -115,30 +116,15 @@ class AlbumUpdate(SQLModel):
     artist_id: Optional[int] = None
 
 
-# --- Full nested read (for complete display) ---
+# --- Nested response schemas ---
 
-class AlbumNested(SQLModel):
-    id: int
-    title: str
-    year: Optional[int]
-    icon: Optional[str]
-    rating: Optional[float]
-    description: Optional[str]
-    sputnik_url: Optional[str]
-    sort_order: int
+class AlbumNested(AlbumRead):
+    pass
 
 
-class ArtistNested(SQLModel):
-    id: int
-    name: str
-    description: Optional[str]
-    sort_order: int
+class ArtistNested(ArtistRead):
     albums: List[AlbumNested] = []
 
 
-class CategoryNested(SQLModel):
-    id: int
-    name: str
-    description: Optional[str]
-    sort_order: int
+class CategoryNested(CategoryRead):
     artists: List[ArtistNested] = []
