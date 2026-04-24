@@ -13,3 +13,8 @@ frontend/dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Dev/Scratch files
+.current-issue.md
+.implementation-plan.md
+.implement-config
