@@ -2,6 +2,10 @@
 
 A personal web app to manage and audit a curated list of metal/rock bands and albums against Sputnikmusic.
 
+**See also:**
+- `prd.md` — Product requirements, user preferences, features, rating philosophy
+- `architecture.md` — Tech stack, data model, API design, UI/UX decisions, file structure
+
 ---
 
 ## Agent Role
