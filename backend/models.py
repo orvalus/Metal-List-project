@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import Optional, List
-from sqlalchemy.orm import Mapped
 from sqlmodel import SQLModel, Field, Relationship
 
 
@@ -10,7 +9,7 @@ class Category(SQLModel, table=True):
     description: Optional[str] = None
     sort_order: int = Field(default=0)
 
-    artists: Mapped[List["Artist"]] = Relationship(back_populates="category")
+    artists: List[Artist] = Relationship(back_populates="category")
 
 
 class Artist(SQLModel, table=True):
@@ -20,9 +19,9 @@ class Artist(SQLModel, table=True):
     sort_order: int = Field(default=0)
 
     category_id: Optional[int] = Field(default=None, foreign_key="category.id")
-    category: Mapped[Optional["Category"]] = Relationship(back_populates="artists")
+    category: Optional[Category] = Relationship(back_populates="artists")
 
-    albums: Mapped[List["Album"]] = Relationship(back_populates="artist")
+    albums: List[Album] = Relationship(back_populates="artist")
 
 
 class Album(SQLModel, table=True):
@@ -36,7 +35,7 @@ class Album(SQLModel, table=True):
     sort_order: int = Field(default=0)
 
     artist_id: Optional[int] = Field(default=None, foreign_key="artist.id")
-    artist: Mapped[Optional["Artist"]] = Relationship(back_populates="albums")
+    artist: Optional[Artist] = Relationship(back_populates="albums")
 
 
 # --- Response/Request schemas (without table=True) ---
