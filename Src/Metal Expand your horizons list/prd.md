@@ -34,7 +34,7 @@ Build a structured, curated canon optimized for:
 ### Hierarchy
 - **Category** (Genre group, e.g., "PROTO-METAL / HARD ROCK")
 - **Artist** (Band name + technical description)
-- **Album** (Title, year, rating, description, Sputnikmusic URL)
+- **Album** (Title, year, rating, tag/icon, description, **Sputnikmusic URL**)
 
 ### Rating System
 - 🔥 **E** = Essential / peak albums
@@ -47,9 +47,14 @@ Build a structured, curated canon optimized for:
 
 ### Read-Only List View
 - Full curated list with all albums, organized by category
-- Legend visible (sidebar or top)
-- Filterable by tag (E, R, D, A, X)
-- **Clickable albums** — open Sputnikmusic album page in new tab
+- **Sidebar Legend** (sticky on desktop, collapsible drawer on mobile)
+  - Legend explains: 🔥E, ⭐R, 🌘D, ⚠️A, 🌀X meanings
+- **Filter Bar** with buttons: All, 🔥E, ⭐R, 🌘D, ⚠️A, 🌀X
+  - Click to toggle filter; show only albums with that tag
+- **2-Column Grid Layout** (responsive: 1 col on mobile, 2 cols on desktop)
+  - Albums displayed as cards with title, year, icon, rating, description
+- **Clickable Albums** — open Sputnikmusic album page in new tab
+- Collapsible categories (click to expand/collapse)
 - Responsive design (desktop + mobile)
 
 ### Manage Page (Admin)

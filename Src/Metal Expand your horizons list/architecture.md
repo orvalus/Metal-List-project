@@ -32,7 +32,9 @@ Album
 ├── year (int)
 ├── rating (float, 3.0–4.7 scale)
 ├── tag (enum: E, R, D, A, X)
+├── icon (str) — emoji + tag (e.g., "🔥E", "⭐R")
 ├── description (str) — one-line review
+├── sputnik_url (str) — URL to album page on Sputnikmusic.com
 └── order (int)
 ```
 
@@ -56,12 +58,16 @@ Album
 ### Pages
 
 #### 1. ListPage (Read-Only)
-- Display full curated list
-- Sidebar with legend (sticky on desktop, collapsible on mobile)
-- Categories collapsible/expandable
-- Albums in 2-column grid (responsive: 1 col on mobile)
-- Filter buttons: All, 🔥E, ⭐R, 🌘D, ⚠️A, 🌀X
-- Search/quick filter (optional MVP+)
+- Display full curated list organized by category
+- **Sidebar Legend** (sticky on desktop, collapsible drawer on mobile)
+  - Explains each tag: 🔥E = Essential, ⭐R = Recommended, 🌘D = Dense, ⚠️A = Harsh, 🌀X = Historical
+- **Filter Bar** with buttons: All, 🔥E, ⭐R, 🌘D, ⚠️A, 🌀X
+  - Click to toggle; show only albums with selected tag
+- Categories collapsible/expandable (click header)
+- **Albums in 2-column grid** (responsive: 1 col on mobile, 2 cols on desktop)
+  - Each album card shows: title, year, icon, rating, description
+  - **Clickable albums** — opens Sputnikmusic page in new tab
+- Search/quick filter by artist or album name (optional MVP+)
 
 #### 2. ManagePage (Admin CRUD)
 - Category management (add/edit/delete)
@@ -122,9 +128,9 @@ App.jsx
 - `DELETE /api/artists/{id}` — delete
 
 ### Albums
-- `GET /api/albums?artist_id=X` — list by artist
-- `POST /api/albums` — create
-- `PUT /api/albums/{id}` — update
+- `GET /api/albums?artist_id=X` — list by artist (includes sputnik_url)
+- `POST /api/albums` — create (requires sputnik_url)
+- `PUT /api/albums/{id}` — update (includes sputnik_url)
 - `DELETE /api/albums/{id}` — delete
 
 ### Import
@@ -137,17 +143,21 @@ App.jsx
 
 ## Parser Format (Google Docs)
 
+The parser extracts structure and Sputnikmusic URLs from Google Docs text:
+
 ```
 CATEGORY NAME
 *description in italics*
 
 ***Artist Name*** – short genre/style description
-- Album Title (Year) – ICON – ★Rating – one-line description
-- Album Title (Year) – ICON – ★Rating – one-line description
+- Album Title (Year) – ICON – ★Rating – https://www.sputnikmusic.com/album/... – one-line description
+- Album Title (Year) – ICON – ★Rating – https://www.sputnikmusic.com/album/... – one-line description
 
 ***Another Artist*** – genre
-- Album (Year) – ICON – ★Rating – description
+- Album (Year) – ICON – ★Rating – https://www.sputnikmusic.com/album/... – description
 ```
+
+**Note:** URLs are extracted from the format above and stored in Album.sputnik_url field. In the UI, albums are clickable and open the Sputnikmusic page in a new tab.
 
 ## Design Decisions
 
@@ -246,9 +256,23 @@ CATEGORY NAME
 └── .gitignore
 ```
 
-## Notes
+## Implementation Notes
 
+### Data & Content
 - Ratings calibrated to Sputnikmusic philosophy (realistic, not inflated)
 - Categories organized chronologically and by genre
 - Album selection prioritizes **discovery over comprehensiveness**
 - Descriptions are concise one-liners, not detailed reviews
+
+### Frontend Components (Must-Have)
+- **Legend.jsx** — Sidebar legend (sticky/collapsible)
+- **FilterBar.jsx** — Tag filter buttons (All, E, R, D, A, X)
+- **CategorySection.jsx** — Collapsible category with artist/albums
+- **ArtistCard.jsx** — Display artist name and description
+- **AlbumCard.jsx** — Display album with clickable Sputnikmusic link
+
+### Backend Enhancements Required
+- Add `sputnik_url` field to Album model
+- Update parser to extract Sputnikmusic URLs from Google Docs format
+- Importer must validate sputnik_url is present before saving
+- All album endpoints must include sputnik_url in response
