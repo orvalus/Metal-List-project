@@ -74,6 +74,7 @@ def import_parsed_data(session: Session, categories: list[ParsedCategory], repla
                     icon=parsed_album.icon,
                     rating=parsed_album.rating,
                     description=parsed_album.description,
+                    sputnik_url=parsed_album.sputnik_url,
                     sort_order=parsed_album.sort_order,
                     artist_id=artist.id,
                 )

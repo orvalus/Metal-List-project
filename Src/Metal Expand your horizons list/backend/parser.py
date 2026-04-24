@@ -23,6 +23,7 @@ class ParsedAlbum:
     rating: Optional[float]
     description: Optional[str]
     sort_order: int
+    sputnik_url: Optional[str] = None
 
 
 @dataclass
@@ -45,18 +46,20 @@ class ParsedCategory:
 ICONS = ["🔥E", "⭐R", "🌘D", "⚠️A", "🌀X"]
 
 # Regex for album line:
-# - Album Name (Year) – ICON – ★Rating – description
+# - Album Name (Year) – ICON – ★Rating – [URL] – description
 # Separator can be – (em dash) or - (hyphen)
 ALBUM_RE = re.compile(
     r"^[-•*]\s*"                          # bullet point
-    r"(?P<title>.+?)"                      # titlu album
+    r"(?P<title>.+?)"                      # album title
     r"\s*[\(\[](?P<year>\d{4})[\)\]]"      # (Year)
     r"\s*[–\-]+\s*"                        # separator
     r"(?P<icon>[🔥⭐🌘⚠️🌀][A-Z])?"         # icon optional
     r"\s*[–\-]+\s*"                        # separator
     r"[★*]?(?P<rating>[\d]+\.[\d]+)"       # rating ex: 4.5
     r"\s*[–\-]+\s*"                        # separator
-    r"(?P<description>.+)?$",              # descriere
+    r"(?P<url>https?://[^\s–\-]+)?"        # URL optional (match until whitespace or separator, greedy)
+    r"(?:\s*[–\-]+\s*)?"                   # optional separator after URL
+    r"(?P<description>.+)?$",              # description
     re.UNICODE
 )
 
@@ -89,6 +92,9 @@ def _parse_album_line(line: str, sort_order: int) -> Optional[ParsedAlbum]:
     icon = m.group("icon")
     rating_str = m.group("rating")
     rating = float(rating_str) if rating_str else None
+    sputnik_url = m.group("url")
+    if sputnik_url:
+        sputnik_url = sputnik_url.strip()
     description = m.group("description")
     if description:
         description = description.strip()
@@ -100,6 +106,7 @@ def _parse_album_line(line: str, sort_order: int) -> Optional[ParsedAlbum]:
         rating=rating,
         description=description,
         sort_order=sort_order,
+        sputnik_url=sputnik_url,
     )
 
 

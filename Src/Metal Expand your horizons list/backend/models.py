@@ -31,6 +31,7 @@ class Album(SQLModel, table=True):
     icon: Optional[str] = None             # ex: "🔥E", "⭐R", "🌘D", "⚠️A", "🌀X"
     rating: Optional[float] = None         # ex: 4.7
     description: Optional[str] = None      # ex: "riff-bible, invented the genre"
+    sputnik_url: Optional[str] = None      # ex: "https://www.sputnikmusic.com/album/12345/"
     sort_order: int = Field(default=0)
 
     artist_id: Optional[int] = Field(default=None, foreign_key="artist.id")
@@ -87,6 +88,7 @@ class AlbumRead(SQLModel):
     icon: Optional[str]
     rating: Optional[float]
     description: Optional[str]
+    sputnik_url: Optional[str]
     sort_order: int
     artist_id: Optional[int]
 
@@ -97,6 +99,7 @@ class AlbumCreate(SQLModel):
     icon: Optional[str] = None
     rating: Optional[float] = None
     description: Optional[str] = None
+    sputnik_url: Optional[str] = None
     sort_order: int = 0
     artist_id: int
 
@@ -107,6 +110,7 @@ class AlbumUpdate(SQLModel):
     icon: Optional[str] = None
     rating: Optional[float] = None
     description: Optional[str] = None
+    sputnik_url: Optional[str] = None
     sort_order: Optional[int] = None
     artist_id: Optional[int] = None
 
@@ -120,6 +124,7 @@ class AlbumNested(SQLModel):
     icon: Optional[str]
     rating: Optional[float]
     description: Optional[str]
+    sputnik_url: Optional[str]
     sort_order: int
 
 
