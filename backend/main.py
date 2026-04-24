@@ -268,15 +268,16 @@ def delete_album(album_id: int, session: Session = Depends(get_session)):
 
 
 # ─────────────────────────────────────────────
-# AUDIT
+# AUDIT - DISABLED
 # ─────────────────────────────────────────────
 
-@app.get("/audit/{artist_id}", summary="Audit an artist against Sputnikmusic")
+@app.get("/audit/{artist_id}", summary="Audit an artist against Sputnikmusic (DISABLED)")
 async def audit_artist(artist_id: int, session: Session = Depends(get_session)):
-    from audit import audit_artist_sputnik
-    artist = session.get(Artist, artist_id)
-    if not artist:
-        raise HTTPException(status_code=404, detail="Artist does not exist")
-    albums_in_db = session.exec(select(Album).where(Album.artist_id == artist_id).order_by(Album.sort_order)).all()
-    result = await audit_artist_sputnik(artist.name, albums_in_db)
-    return result
+    """
+    DISABLED: This endpoint has been disabled to prevent any external connections to Sputnikmusic.
+    The audit functionality is not available in this deployment.
+    """
+    raise HTTPException(
+        status_code=501,
+        detail="Audit functionality is disabled. No external connections to Sputnikmusic are allowed."
+    )

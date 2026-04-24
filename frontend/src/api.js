@@ -34,5 +34,6 @@ export const createAlbum = (data) => api.post('/albums', data).then(r => r.data)
 export const updateAlbum = (id, data) => api.patch(`/albums/${id}`, data).then(r => r.data)
 export const deleteAlbum = (id) => api.delete(`/albums/${id}`)
 
-// ── Audit ──────────────────────────────────────────────
-export const auditArtist = (artistId) => api.get(`/audit/${artistId}`).then(r => r.data)
+// ── Audit (DISABLED) ───────────────────────────────────
+// Audit functionality has been disabled to prevent external connections to Sputnikmusic
+// export const auditArtist = (artistId) => api.get(`/audit/${artistId}`).then(r => r.data)
