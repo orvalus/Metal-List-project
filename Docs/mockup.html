@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metal List - Expand Your Horizons</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR - Legend */
+        .sidebar {
+            width: 280px;
+            background: white;
+            padding: 24px;
+            border-right: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #000;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .legend-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .legend-text {
+            color: #666;
+        }
+
+        .legend-text strong {
+            color: #000;
+            display: block;
+        }
+
+        /* MAIN CONTENT */
+        .main {
+            flex: 1;
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header {
+            margin-bottom: 32px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* FILTER BUTTONS */
+        .filters {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: #999;
+            background: #fafafa;
+        }
+
+        .filter-btn.active {
+            border-color: #ff9800;
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        /* CATEGORY */
+        .category {
+            margin-bottom: 32px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            user-select: none;
+            margin-bottom: 16px;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .category-header:hover {
+            background: #f0f0f0;
+        }
+
+        .category-toggle {
+            font-size: 18px;
+            width: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .category-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            flex: 1;
+        }
+
+        .category-subtitle {
+            font-size: 13px;
+            color: #999;
+            font-weight: normal;
+        }
+
+        .category-content {
+            margin-left: 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .category-content.collapsed {
+            display: none;
+        }
+
+        /* ARTIST */
+        .artist {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #ff9800;
+        }
+
+        .artist-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #000;
+        }
+
+        .artist-genre {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .artist-description {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        /* ALBUM */
+        .album {
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 3px solid #f5f5f5;
+        }
+
+        .album-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+
+        .album-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #000;
+        }
+
+        .album-year {
+            color: #999;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+
+        .album-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+
+        .album-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        /* Tag colors */
+        .tag-e {
+            background: #ffe0b2;
+            color: #e65100;
+        }
+
+        .tag-r {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+
+        .tag-d {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+
+        .tag-a {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .tag-x {
+            background: #e0e0e0;
+            color: #616161;
+        }
+
+        .album-rating {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .album-description {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .category-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .main {
+                padding: 16px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .category-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <h2>Legenda</h2>
+            <div class="legend-item">
+                <div class="legend-icon">🟠</div>
+                <div class="legend-text">
+                    <strong>E</strong>
+                    Essential (album definitoriu)
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon">⭐</div>
+                <div class="legend-text">
+                    <strong>R</strong>
+                    Recomandat (foarte bun, accesibil)
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon">🟣</div>
+                <div class="legend-text">
+                    <strong>D</strong>
+                    Deep Dive (important, dar dens)
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon">⚠️</div>
+                <div class="legend-text">
+                    <strong>A</strong>
+                    Atenție (harsh / extrem)
+                </div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-icon">❌</div>
+                <div class="legend-text">
+                    <strong>X</strong>
+                    Nu recomand (doar istoric)
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main">
+            <div class="header">
+                <h1>Metal: Expand Your Horizons</h1>
+                <p>A curated list of essential metal albums to explore</p>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="filters">
+                <button class="filter-btn">All</button>
+                <button class="filter-btn">🟠 Essential</button>
+                <button class="filter-btn">⭐ Recommended</button>
+                <button class="filter-btn">🟣 Deep Dive</button>
+                <button class="filter-btn">⚠️ Harsh</button>
+            </div>
+
+            <!-- CATEGORY 1 -->
+            <div class="category">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span class="category-toggle">▼</span>
+                    <span class="category-title">Proto-Metal / Hard Rock</span>
+                    <span class="category-subtitle">Pionierii direct ai heavy metalului modern</span>
+                </div>
+                <div class="category-content">
+                    <!-- ARTIST 1 -->
+                    <div class="artist">
+                        <div class="artist-name">Led Zeppelin</div>
+                        <div class="artist-genre">Hard Rock / Blues Rock / Proto-Metal</div>
+                        <div class="artist-description">
+                            Au creat imaginajul arhitetu vrele, producție moderne și al atitudini care definit heavy metalul inferior.
+                        </div>
+
+                        <!-- ALBUM 1 -->
+                        <div class="album">
+                            <div class="album-header">
+                                <span class="album-title">Led Zeppelin (1969)</span>
+                                <span class="album-year">1969</span>
+                            </div>
+                            <div class="album-meta">
+                                <span class="album-tag tag-r">⭐ R</span>
+                                <span class="album-rating">4.1 / 5</span>
+                            </div>
+                            <div class="album-description">
+                                Debut raw și energic; blues-punk și riff definitoriu pentru ADN-ul trupei.
+                            </div>
+                        </div>
+
+                        <!-- ALBUM 2 -->
+                        <div class="album">
+                            <div class="album-header">
+                                <span class="album-title">Led Zeppelin II</span>
+                                <span class="album-year">1969</span>
+                            </div>
+                            <div class="album-meta">
+                                <span class="album-tag tag-e">🟠 E</span>
+                                <span class="album-rating">4.3 / 5</span>
+                            </div>
+                            <div class="album-description">
+                                Riffuri pre-metal, energie brută; "Whole Lotta Love" devine piesa de predilecție pentru heavy.
+                            </div>
+                        </div>
+
+                        <!-- ALBUM 3 -->
+                        <div class="album">
+                            <div class="album-header">
+                                <span class="album-title">Led Zeppelin III</span>
+                                <span class="album-year">1970</span>
+                            </div>
+                            <div class="album-meta">
+                                <span class="album-tag tag-r">⭐ R</span>
+                                <span class="album-rating">4.0 / 5</span>
+                            </div>
+                            <div class="album-description">
+                                Mai folk și acoustic, dar demonstrează versatilitatea trupei. "Immigrant Song" e un clasic.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ARTIST 2 -->
+                    <div class="artist">
+                        <div class="artist-name">Deep Purple</div>
+                        <div class="artist-genre">Hard Rock / Proto-Metal / High-Gain Organ</div>
+                        <div class="artist-description">
+                            Una dintre primele trupe care cântă efectiv metalic: distorsiun masiv, ritm rapid, twin lead guitar și orgă Marshall.
+                        </div>
+
+                        <!-- ALBUM 1 -->
+                        <div class="album">
+                            <div class="album-header">
+                                <span class="album-title">Deep Purple (1969)</span>
+                                <span class="album-year">1969</span>
+                            </div>
+                            <div class="album-meta">
+                                <span class="album-tag tag-d">🟣 D</span>
+                                <span class="album-rating">3.8 / 5</span>
+                            </div>
+                            <div class="album-description">
+                                Heavy-psychedelic surprizător dar dens pentru epocă; "Mandrake Root" prefigurează importanța heavy-ului viitor.
+                            </div>
+                        </div>
+
+                        <!-- ALBUM 2 -->
+                        <div class="album">
+                            <div class="album-header">
+                                <span class="album-title">In Rock</span>
+                                <span class="album-year">1970</span>
+                            </div>
+                            <div class="album-meta">
+                                <span class="album-tag tag-e">🟠 E</span>
+                                <span class="album-rating">4.1 / 5</span>
+                            </div>
+                            <div class="album-description">
+                                Agresiv, rapid, considerat de multi primul adevărat album heavy. "Child in Time" e o capodoperă.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CATEGORY 2 -->
+            <div class="category">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span class="category-toggle">▼</span>
+                    <span class="category-title">British Heavy Metal (1970s)</span>
+                    <span class="category-subtitle">Formarea identității metalului clasic</span>
+                </div>
+                <div class="category-content">
+                    <!-- ARTIST 1 -->
+                    <div class="artist">
+                        <div class="artist-name">Black Sabbath</div>
+                        <div class="artist-genre">Heavy Metal / Doom Metal</div>
+                        <div class="artist-description">
+                            Inventatorii metalului modern. Tonalitate obscură, riff apocaliptic și voce distonată definesc genul complet.
+                        </div>
+
+                        <!-- ALBUM 1 -->
+                        <div class="album">
+                            <div class="album-header">
+                                <span class="album-title">Paranoid</span>
+                                <span class="album-year">1970</span>
+                            </div>
+                            <div class="album-meta">
+                                <span class="album-tag tag-e">🟠 E</span>
+                                <span class="album-rating">4.6 / 5</span>
+                            </div>
+                            <div class="album-description">
+                                Al doilea album, dar perforța canonică. "War Pigs", "Iron Man", "Paranoid" sunt definitorii pentru metalul clasic.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function toggleCategory(header) {
+            const content = header.nextElementSibling;
+            const toggle = header.querySelector('.category-toggle');
+            
+            content.classList.toggle('collapsed');
+            toggle.textContent = content.classList.contains('collapsed') ? '▶' : '▼';
+        }
+    </script>
+</body>
+</html>
